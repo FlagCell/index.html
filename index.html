@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Pix - Modo Mínimo Compatível</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
@@ -15,7 +16,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 20px;
+      padding: 10px;
       position: relative;
       overflow-x: hidden;
     }
@@ -32,45 +33,50 @@
     }
 
     .container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 32px;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 24px;
+      border-radius: 20px;
       box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
       position: relative;
       z-index: 1;
       animation: fadeInUp 0.8s ease-out;
+      min-height: calc(100vh - 20px);
+      display: flex;
+      flex-direction: column;
     }
 
     h2 {
       color: #2d3748;
       text-align: center;
-      margin-bottom: 30px;
-      font-size: 1.8rem;
+      margin-bottom: 25px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
       font-weight: 700;
     }
 
     label {
       display: block;
-      margin-top: 20px;
+      margin-top: 15px;
       font-weight: 600;
       color: #2d3748;
       margin-bottom: 8px;
+      font-size: clamp(0.9rem, 3vw, 1rem);
     }
 
     input, select {
       width: 100%;
-      padding: 16px;
+      padding: clamp(12px, 4vw, 18px);
       margin-top: 5px;
       border: 2px solid #e2e8f0;
       border-radius: 12px;
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 3.5vw, 1.1rem);
       background: white;
       transition: all 0.3s ease;
       font-family: inherit;
+      min-height: 50px;
     }
 
     input:focus, select:focus {
@@ -82,19 +88,20 @@
 
     button {
       width: 100%;
-      padding: 18px;
+      padding: clamp(16px, 4vw, 20px);
       margin-top: 20px;
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
       border: none;
       border-radius: 12px;
-      font-size: 1.1rem;
+      font-size: clamp(1rem, 3.5vw, 1.2rem);
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
       position: relative;
       overflow: hidden;
+      min-height: 55px;
     }
 
     button::before {
@@ -128,14 +135,18 @@
       background: #f8fafc;
       border-radius: 16px;
       border: 2px dashed #e2e8f0;
-      min-height: 120px;
+      min-height: clamp(200px, 50vw, 400px);
       display: flex;
       align-items: center;
       justify-content: center;
+      flex: 1;
     }
 
     #qrcode img {
       max-width: 100%;
+      max-height: 80vh;
+      width: auto;
+      height: auto;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
@@ -144,24 +155,33 @@
       background: #f1f5f9;
       border: 2px solid #e2e8f0;
       border-radius: 12px;
-      padding: 20px;
+      padding: clamp(15px, 4vw, 20px);
       font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      word-break: break-word;
+      font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+      word-break: break-all;
       margin-top: 15px;
       color: #475569;
-      line-height: 1.5;
+      line-height: 1.4;
       min-height: 60px;
       display: flex;
       align-items: center;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .btn-group {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .btn-group button {
-      width: 49%;
-      display: inline-block;
-      margin: 10px 0.5% 0 0.5%;
-      padding: 16px 24px;
-      font-size: 1rem;
+      flex: 1;
+      margin: 0;
+      min-width: calc(50% - 5px);
+      padding: clamp(14px, 4vw, 18px);
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
       font-weight: 600;
     }
 
@@ -187,6 +207,7 @@
       color: #a0aec0;
       font-style: italic;
       text-align: center;
+      font-size: clamp(0.9rem, 3vw, 1rem);
     }
 
     @keyframes fadeInUp {
@@ -200,19 +221,109 @@
       }
     }
 
-    @media (max-width: 480px) {
-      .container {
-        margin: 10px;
-        padding: 20px;
+    /* Mobile específico */
+    @media (max-width: 768px) {
+      body {
+        padding: 5px;
       }
 
-      h2 {
-        font-size: 1.5rem;
+      .container {
+        padding: 15px;
+        border-radius: 15px;
+        min-height: calc(100vh - 10px);
+      }
+
+      #qrcode {
+        min-height: clamp(250px, 60vw, 350px);
+        padding: 15px;
+      }
+
+      .pix-code {
+        font-size: clamp(0.6rem, 2.8vw, 0.8rem);
+        padding: 12px;
+        line-height: 1.3;
+      }
+
+      .btn-group {
+        flex-direction: column;
+        gap: 8px;
       }
 
       .btn-group button {
-        width: 100%;
-        margin: 8px 0;
+        min-width: 100%;
+        flex: none;
+      }
+
+      input, select {
+        font-size: 16px; /* Previne zoom no iOS */
+      }
+    }
+
+    /* Landscape mobile */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .container {
+        min-height: calc(100vh - 10px);
+      }
+
+      #qrcode {
+        min-height: 200px;
+      }
+
+      .btn-group {
+        flex-direction: row;
+      }
+
+      .btn-group button {
+        min-width: calc(50% - 5px);
+      }
+    }
+
+    /* Tablets */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .container {
+        max-width: 90%;
+        padding: 30px;
+      }
+
+      #qrcode {
+        min-height: 300px;
+      }
+    }
+
+    /* Telas muito pequenas */
+    @media (max-width: 320px) {
+      .container {
+        padding: 10px;
+      }
+
+      h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+      }
+
+      label {
+        margin-top: 10px;
+        font-size: 0.85rem;
+      }
+
+      input, select {
+        padding: 12px;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 14px;
+        font-size: 0.95rem;
+      }
+
+      #qrcode {
+        min-height: 200px;
+        padding: 10px;
+      }
+
+      .pix-code {
+        font-size: 0.6rem;
+        padding: 10px;
       }
     }
   </style>
@@ -305,10 +416,15 @@ function gerar() {
 
   document.getElementById("emv").textContent = payload;
 
+  // QR Code com tamanho otimizado para mobile
+  const isMobile = window.innerWidth <= 768;
+  const scale = isMobile ? 12 : 8;
+  
   QRCode.toDataURL(payload, {
     errorCorrectionLevel: 'M',
     margin: 4,
-    scale: 8
+    scale: scale,
+    width: isMobile ? 300 : 256
   }, function (err, url) {
     if (err) return alert("Erro ao gerar QR Code.");
     imgBase64 = url;
@@ -316,6 +432,7 @@ function gerar() {
     img.src = url;
     img.alt = "QR Code Pix";
     img.style.maxWidth = "100%";
+    img.style.height = "auto";
     const qrDiv = document.getElementById('qrcode');
     qrDiv.innerHTML = "";
     qrDiv.appendChild(img);
@@ -324,9 +441,40 @@ function gerar() {
 
 function copiar() {
   const codigo = document.getElementById("emv").textContent;
-  navigator.clipboard.writeText(codigo).then(() => {
+  if (codigo.includes("aparecerá aqui")) {
+    return alert("Gere um código PIX primeiro!");
+  }
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(codigo).then(() => {
+      alert("Código Pix copiado com sucesso!");
+    }).catch(() => {
+      // Fallback para dispositivos mais antigos
+      fallbackCopy(codigo);
+    });
+  } else {
+    fallbackCopy(codigo);
+  }
+}
+
+function fallbackCopy(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.position = "fixed";
+  textArea.style.left = "-999999px";
+  textArea.style.top = "-999999px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    document.execCommand('copy');
     alert("Código Pix copiado com sucesso!");
-  });
+  } catch (err) {
+    alert("Erro ao copiar. Copie manualmente o código.");
+  }
+  
+  document.body.removeChild(textArea);
 }
 
 function baixar() {
@@ -334,8 +482,40 @@ function baixar() {
   const a = document.createElement('a');
   a.href = imgBase64;
   a.download = "qrcode_pix.png";
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
 }
+
+// Otimização para telas pequenas
+window.addEventListener('resize', function() {
+  // Regenera QR code com tamanho otimizado quando a orientação muda
+  const emvElement = document.getElementById("emv");
+  if (emvElement && !emvElement.textContent.includes("aparecerá aqui")) {
+    // Há um código gerado, regenera com novo tamanho
+    const isMobile = window.innerWidth <= 768;
+    const scale = isMobile ? 12 : 8;
+    
+    QRCode.toDataURL(emvElement.textContent, {
+      errorCorrectionLevel: 'M',
+      margin: 4,
+      scale: scale,
+      width: isMobile ? 300 : 256
+    }, function (err, url) {
+      if (!err) {
+        imgBase64 = url;
+        const img = new Image();
+        img.src = url;
+        img.alt = "QR Code Pix";
+        img.style.maxWidth = "100%";
+        img.style.height = "auto";
+        const qrDiv = document.getElementById('qrcode');
+        qrDiv.innerHTML = "";
+        qrDiv.appendChild(img);
+      }
+    });
+  }
+});
 </script>
 
 </body>
