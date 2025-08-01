@@ -2,10 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Gerador QR Code Pix</title>
+  <title>Pix Compatível - Curto e Leve</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial; max-width: 600px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
     label { display: block; margin-top: 10px; font-weight: bold; }
     input, select { width: 100%; padding: 10px; margin-top: 5px; }
     button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; }
@@ -16,13 +16,7 @@
 </head>
 <body>
 
-<h2>Gerador QR Code Pix (padrão BC)</h2>
-
-<label>Nome do recebedor:</label>
-<input id="nome" maxlength="25" placeholder="Ex: JOAO SILVA" />
-
-<label>Cidade do recebedor:</label>
-<input id="cidade" maxlength="15" placeholder="Ex: RIO DE JANEIRO" />
+<h2>Gerador Pix (Compacto - 100% compatível)</h2>
 
 <label>Tipo da chave Pix:</label>
 <select id="tipo">
@@ -37,11 +31,8 @@
 <label>Chave Pix:</label>
 <input id="chave" maxlength="77" placeholder="Digite sua chave Pix" />
 
-<label>Valor (opcional):</label>
-<input id="valor" type="number" step="0.01" placeholder="Ex: 25.00" />
-
-<label>Identificador (Txid) - opcional:</label>
-<input id="txid" maxlength="25" placeholder="Ex: PEDIDO123" />
+<label>Txid (opcional):</label>
+<input id="txid" maxlength="25" placeholder="Ex: ***" />
 
 <button onclick="gerar()">Gerar QR Code Pix</button>
 
@@ -68,49 +59,42 @@ function crc16(str) {
 }
 
 function gerar() {
-  const nome = document.getElementById("nome").value.trim().toUpperCase();
-  const cidade = document.getElementById("cidade").value.trim().toUpperCase();
   const tipo = document.getElementById("tipo").value;
-  const chave = document.getElementById("chave").value.trim();
-  const valor = document.getElementById("valor").value.trim();
+  let chave = document.getElementById("chave").value.trim();
   const txid = document.getElementById("txid").value.trim();
+  const nome = "N";
+  const cidade = "C";
 
-  if (!nome || !cidade || !tipo || !chave) {
-    alert("Preencha os campos obrigatórios.");
+  if (!tipo || !chave) {
+    alert("Preencha tipo e chave Pix.");
     return;
   }
 
-  let chaveFormatada = chave;
+  // Ajustar chave para telefone com +55
   if (tipo === "telefone") {
-    chaveFormatada = chave.replace(/\D/g, "");
-    if (!chaveFormatada.startsWith("55")) chaveFormatada = "55" + chaveFormatada;
+    chave = chave.replace(/\D/g, "");
+    if (!chave.startsWith("55")) chave = "55" + chave;
+    chave = "+" + chave;
   } else if (tipo === "cpf" || tipo === "cnpj") {
-    chaveFormatada = chave.replace(/\D/g, "");
+    chave = chave.replace(/\D/g, "");
   }
 
-  const gui = "br.gov.bcb.pix";
-  const merchantAccount =
-    "00" + "14" + gui +
-    "01" + chaveFormatada.length.toString().padStart(2, '0') + chaveFormatada;
-  const merchantField =
-    "26" + merchantAccount.length.toString().padStart(2, '0') + merchantAccount;
+  const gui = "BR.GOV.BCB.PIX";
+  const merchantAccount = "00" + "14" + gui + "01" + chave.length.toString().padStart(2, '0') + chave;
+  const merchantField = "26" + merchantAccount.length.toString().padStart(2, '0') + merchantAccount;
 
   let payload = "000201";
-  payload += "010211";
+  // ⚠️ Campo 01 (estático/dinâmico) omitido de propósito
   payload += merchantField;
   payload += "52040000";
   payload += "5303986";
-  if (valor) {
-    const valStr = parseFloat(valor).toFixed(2);
-    payload += "54" + valStr.length.toString().padStart(2, "0") + valStr;
-  }
   payload += "5802BR";
-  payload += "59" + nome.length.toString().padStart(2, "0") + nome;
-  payload += "60" + cidade.length.toString().padStart(2, "0") + cidade;
+  payload += "5901" + nome;
+  payload += "6001" + cidade;
 
   if (txid) {
-    const ad = "05" + txid.length.toString().padStart(2, "0") + txid;
-    payload += "62" + ad.length.toString().padStart(2, "0") + ad;
+    const ad = "05" + txid.length.toString().padStart(2, '0') + txid;
+    payload += "62" + ad.length.toString().padStart(2, '0') + ad;
   }
 
   payload += "6304";
