@@ -31,6 +31,12 @@
 <label>Chave Pix:</label>
 <input id="chave" maxlength="77" placeholder="Digite sua chave Pix" />
 
+<label>Txid (opcional):</label>
+<input id="txid" maxlength="25" placeholder="Ex: PEDIDO123" />
+
+<label>Valor (opcional):</label>
+<input id="valor" type="number" step="0.01" placeholder="Ex: 49.90" />
+
 <button onclick="gerar()">Gerar QR Code e Cópia e Cola</button>
 
 <div id="qrcode"></div>
@@ -58,6 +64,9 @@ function crc16(str) {
 function gerar() {
   const tipo = document.getElementById("tipo").value;
   let chave = document.getElementById("chave").value.trim();
+  const txid = document.getElementById("txid").value.trim();
+  const valor = document.getElementById("valor").value.trim();
+
   if (!tipo || !chave) return alert("Preencha tipo e chave Pix.");
 
   if (tipo === "telefone") {
@@ -77,12 +86,21 @@ function gerar() {
                 "5303986" +
                 "5802BR" +
                 "5901N" +
-                "6001C" +
-                "62070503***" +
-                "6304";
+                "6001C";
 
-  const crc = crc16(payload);
-  payload += crc;
+  if (valor && !isNaN(parseFloat(valor))) {
+    const valorFmt = parseFloat(valor).toFixed(2);
+    payload += "54" + valorFmt.length.toString().padStart(2, '0') + valorFmt;
+  }
+
+  if (txid) {
+    const ad = "05" + txid.length.toString().padStart(2, '0') + txid;
+    payload += "62" + ad.length.toString().padStart(2, '0') + ad;
+  } else {
+    payload += "62070503***";
+  }
+
+  payload += "6304" + crc16(payload);
 
   document.getElementById("emv").textContent = payload;
 
