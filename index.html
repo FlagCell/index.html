@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Pix Compatível - Sem cidade</title>
+  <title>Pix Compatível - Com nome, sem cidade</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
     body { font-family: Arial; max-width: 600px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
@@ -16,7 +16,10 @@
 </head>
 <body>
 
-<h2>Gerador Pix (Leve - sem cidade)</h2>
+<h2>Gerador Pix (Nome livre, sem cidade)</h2>
+
+<label>Nome do recebedor:</label>
+<input id="nome" maxlength="25" placeholder="Ex: JOÃO" />
 
 <label>Tipo da chave Pix:</label>
 <select id="tipo">
@@ -59,13 +62,13 @@ function crc16(str) {
 }
 
 function gerar() {
+  const nome = document.getElementById("nome").value.trim().toUpperCase();
   const tipo = document.getElementById("tipo").value;
   let chave = document.getElementById("chave").value.trim();
   const txid = document.getElementById("txid").value.trim();
-  const nome = "N";
 
-  if (!tipo || !chave) {
-    alert("Preencha tipo e chave Pix.");
+  if (!tipo || !chave || !nome) {
+    alert("Preencha nome, tipo e chave Pix.");
     return;
   }
 
@@ -82,13 +85,12 @@ function gerar() {
   const merchantField = "26" + merchantAccount.length.toString().padStart(2, '0') + merchantAccount;
 
   let payload = "000201";
-  // Campo 01 removido
   payload += merchantField;
   payload += "52040000";
   payload += "5303986";
   payload += "5802BR";
-  payload += "5901" + nome;
-  // Campo 60 (cidade) removido
+  payload += "59" + nome.length.toString().padStart(2, '0') + nome;
+  // cidade removido
 
   if (txid) {
     const ad = "05" + txid.length.toString().padStart(2, '0') + txid;
