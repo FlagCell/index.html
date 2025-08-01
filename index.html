@@ -82,11 +82,13 @@ function gerar() {
     chaveFormatada = chave.replace(/\D/g, "");
   }
 
+  // Corrigido: campo 26 com subcampos TLV corretos
   const gui = "br.gov.bcb.pix";
-  const guiField = "00" + "14" + gui;
-  const chaveField = "01" + chaveFormatada.length.toString().padStart(2, "0") + chaveFormatada;
-  const merchantAccount = guiField + chaveField;
-  const merchantField = "26" + merchantAccount.length.toString().padStart(2, "0") + merchantAccount;
+  const merchantInfo =
+    "00" + "14" + gui +
+    "01" + chaveFormatada.length.toString().padStart(2, '0') + chaveFormatada;
+  const merchantField =
+    "26" + merchantInfo.length.toString().padStart(2, '0') + merchantInfo;
 
   let payload = "000201";
   payload += "010211"; // QR Estático
@@ -111,7 +113,7 @@ function gerar() {
 
   document.getElementById("emv").innerText = payload;
 
-  // Geração da imagem do QR Code com correção
+  // Geração do QR Code com margem e correção de erro
   QRCode.toDataURL(payload, {
     errorCorrectionLevel: 'M',
     margin: 4,
