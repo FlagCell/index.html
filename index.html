@@ -2,13 +2,13 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Pix Ultraleve</title>
+  <title>Pix - Modo Mínimo Compatível</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial; max-width: 600px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
+    body { font-family: Arial; max-width: 600px; margin: 20px auto; padding: 20px; background: #f0f0f0; }
     label { display: block; margin-top: 10px; font-weight: bold; }
     input, select { width: 100%; padding: 10px; margin-top: 5px; }
-    button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; }
+    button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; cursor: pointer; }
     #qrcode { margin-top: 20px; text-align: center; }
     .pix-code { background: #fff; border: 1px solid #ccc; padding: 10px; font-family: monospace; word-break: break-word; margin-top: 15px; }
     .btn-group button { width: 49%; display: inline-block; }
@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<h2>Gerador Pix (Ultracompacto)</h2>
+<h2>Pix Compatível - Cópia e Cola + QR</h2>
 
 <label>Tipo da chave Pix:</label>
 <select id="tipo">
@@ -31,10 +31,7 @@
 <label>Chave Pix:</label>
 <input id="chave" maxlength="77" placeholder="Digite sua chave Pix" />
 
-<label>Txid (opcional):</label>
-<input id="txid" maxlength="25" placeholder="Ex: ***" />
-
-<button onclick="gerar()">Gerar QR Code Pix</button>
+<button onclick="gerar()">Gerar QR Code e Cópia e Cola</button>
 
 <div id="qrcode"></div>
 <div class="pix-code" id="emv"></div>
@@ -61,12 +58,7 @@ function crc16(str) {
 function gerar() {
   const tipo = document.getElementById("tipo").value;
   let chave = document.getElementById("chave").value.trim();
-  const txid = document.getElementById("txid").value.trim();
-
-  if (!tipo || !chave) {
-    alert("Preencha tipo e chave Pix.");
-    return;
-  }
+  if (!tipo || !chave) return alert("Preencha tipo e chave Pix.");
 
   if (tipo === "telefone") {
     chave = chave.replace(/\D/g, "");
@@ -80,21 +72,17 @@ function gerar() {
   const merchantAccount = "00" + "14" + gui + "01" + chave.length.toString().padStart(2, '0') + chave;
   const merchantField = "26" + merchantAccount.length.toString().padStart(2, '0') + merchantAccount;
 
-  let payload = "000201";
-  payload += merchantField;
-  payload += "52040000";
-  payload += "5303986";
-  payload += "5802BR";
+  let payload = "000201" + merchantField +
+                "52040000" +
+                "5303986" +
+                "5802BR" +
+                "5901N" +
+                "6001C" +
+                "62070503***" +
+                "6304";
 
-  // omitindo nome (campo 59) e cidade (campo 60)
-
-  if (txid) {
-    const ad = "05" + txid.length.toString().padStart(2, '0') + txid;
-    payload += "62" + ad.length.toString().padStart(2, '0') + ad;
-  }
-
-  payload += "6304";
-  payload += crc16(payload);
+  const crc = crc16(payload);
+  payload += crc;
 
   document.getElementById("emv").textContent = payload;
 
@@ -123,10 +111,7 @@ function copiar() {
 }
 
 function baixar() {
-  if (!imgBase64) {
-    alert("Gere um QR Code antes de baixar.");
-    return;
-  }
+  if (!imgBase64) return alert("Gere um QR Code antes de baixar.");
   const a = document.createElement('a');
   a.href = imgBase64;
   a.download = "qrcode_pix.png";
