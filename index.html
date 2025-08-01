@@ -5,42 +5,253 @@
   <title>Pix - Modo Mínimo Compatível</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial; max-width: 600px; margin: 20px auto; padding: 20px; background: #f0f0f0; }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, select { width: 100%; padding: 10px; margin-top: 5px; }
-    button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; cursor: pointer; }
-    #qrcode { margin-top: 20px; text-align: center; }
-    .pix-code { background: #fff; border: 1px solid #ccc; padding: 10px; font-family: monospace; word-break: break-word; margin-top: 15px; }
-    .btn-group button { width: 49%; display: inline-block; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="30" cy="30" r="1"/></g></svg>') repeat;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    h2 {
+      color: #2d3748;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 16px;
+      margin-top: 5px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: white;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
+
+    button {
+      width: 100%;
+      padding: 18px;
+      margin-top: 20px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.6);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #qrcode {
+      margin-top: 20px;
+      text-align: center;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 16px;
+      border: 2px dashed #e2e8f0;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #qrcode img {
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .pix-code {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      word-break: break-word;
+      margin-top: 15px;
+      color: #475569;
+      line-height: 1.5;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-group button {
+      width: 49%;
+      display: inline-block;
+      margin: 10px 0.5% 0 0.5%;
+      padding: 16px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .btn-group button:first-child {
+      background: linear-gradient(135deg, #48bb78, #38a169);
+      box-shadow: 0 4px 16px rgba(72, 187, 120, 0.4);
+    }
+
+    .btn-group button:last-child {
+      background: linear-gradient(135deg, #ed8936, #dd6b20);
+      box-shadow: 0 4px 16px rgba(237, 137, 54, 0.4);
+    }
+
+    .btn-group button:first-child:hover {
+      box-shadow: 0 8px 24px rgba(72, 187, 120, 0.6);
+    }
+
+    .btn-group button:last-child:hover {
+      box-shadow: 0 8px 24px rgba(237, 137, 54, 0.6);
+    }
+
+    .empty-state {
+      color: #a0aec0;
+      font-style: italic;
+      text-align: center;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 10px;
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .btn-group button {
+        width: 100%;
+        margin: 8px 0;
+      }
+    }
   </style>
 </head>
 <body>
 
-<h2>Pix Compatível - Cópia e Cola + QR</h2>
+<div class="container">
+  <h2>Pix Compatível - Cópia e Cola + QR</h2>
 
-<label>Tipo da chave Pix:</label>
-<select id="tipo">
-  <option value="">Selecione</option>
-  <option value="cpf">CPF</option>
-  <option value="cnpj">CNPJ</option>
-  <option value="telefone">Telefone</option>
-  <option value="email">E-mail</option>
-  <option value="aleatoria">Chave Aleatória</option>
-</select>
+  <label>Tipo da chave Pix:</label>
+  <select id="tipo">
+    <option value="">Selecione</option>
+    <option value="cpf">CPF</option>
+    <option value="cnpj">CNPJ</option>
+    <option value="telefone">Telefone</option>
+    <option value="email">E-mail</option>
+    <option value="aleatoria">Chave Aleatória</option>
+  </select>
 
-<label>Chave Pix:</label>
-<input id="chave" maxlength="77" placeholder="Digite sua chave Pix" />
+  <label>Chave Pix:</label>
+  <input id="chave" maxlength="77" placeholder="Digite sua chave Pix" />
 
-<label>Valor (opcional):</label>
-<input id="valor" type="number" step="0.01" placeholder="Ex: 49.90" />
+  <label>Valor (opcional):</label>
+  <input id="valor" type="number" step="0.01" placeholder="Ex: 49.90" />
 
-<button onclick="gerar()">Gerar QR Code e Cópia e Cola</button>
+  <button onclick="gerar()">Gerar QR Code e Cópia e Cola</button>
 
-<div id="qrcode"></div>
-<div class="pix-code" id="emv"></div>
-<div class="btn-group">
-  <button onclick="copiar()">📋 Copiar código Pix</button>
-  <button onclick="baixar()">⬇️ Baixar QR Code</button>
+  <div id="qrcode">
+    <div class="empty-state">QR Code aparecerá aqui</div>
+  </div>
+  
+  <div class="pix-code" id="emv">
+    <div class="empty-state">Código PIX aparecerá aqui</div>
+  </div>
+  
+  <div class="btn-group">
+    <button onclick="copiar()">📋 Copiar código Pix</button>
+    <button onclick="baixar()">⬇️ Baixar QR Code</button>
+  </div>
 </div>
 
 <script>
