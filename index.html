@@ -1,240 +1,247 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador PIX QR Code</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💳</text></svg>">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh; padding: 20px;
-        }
-        .container {
-            max-width: 500px; margin: 0 auto; background: white;
-            border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #32d692 0%, #1dd1a1 100%);
-            color: white; text-align: center; padding: 30px 20px;
-        }
-        .header h1 { font-size: 28px; margin-bottom: 5px; }
-        .header p { opacity: 0.9; font-size: 14px; }
-        .form-container { padding: 30px; }
-        .form-group { margin-bottom: 20px; }
-        label {
-            display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px;
-        }
-        input, select {
-            width: 100%; padding: 12px 15px; border: 2px solid #e1e8ed;
-            border-radius: 8px; font-size: 16px; background: #f8f9fa;
-        }
-        input:focus, select:focus {
-            outline: none; border-color: #32d692; background: white;
-            box-shadow: 0 0 0 3px rgba(50, 214, 146, 0.1);
-        }
-        .btn {
-            width: 100%; background: linear-gradient(135deg, #32d692 0%, #1dd1a1 100%);
-            color: white; border: none; padding: 15px; border-radius: 8px;
-            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(50, 214, 146, 0.3);
-        }
-        .result {
-            margin-top: 30px; text-align: center; padding: 20px;
-            background: #f8f9fa; border-radius: 10px; display: none;
-        }
-        .qr-code { margin: 20px 0; }
-        .pix-code {
-            background: white; padding: 15px; border-radius: 8px;
-            border: 1px solid #e1e8ed; font-family: monospace;
-            font-size: 12px; word-break: break-all; margin: 15px 0;
-        }
-        .copy-btn {
-            background: #6c757d; font-size: 14px; padding: 8px 20px; margin-top: 10px;
-        }
-        .footer {
-            text-align: center; padding: 20px; color: #666;
-            font-size: 12px; border-top: 1px solid #e1e8ed;
-        }
-        .error {
-            background: #fee; color: #c33; padding: 10px;
-            border-radius: 5px; margin: 10px 0; display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerador PIX QR Code</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💳</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh; padding: 20px;
+    }
+    .container {
+      max-width: 500px; margin: 0 auto; background: white;
+      border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #32d692 0%, #1dd1a1 100%);
+      color: white; text-align: center; padding: 30px 20px;
+    }
+    .header h1 { font-size: 28px; margin-bottom: 5px; }
+    .header p { opacity: 0.9; font-size: 14px; }
+    .form-container { padding: 30px; }
+    .form-group { margin-bottom: 20px; }
+    label {
+      display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px;
+    }
+    input, select {
+      width: 100%; padding: 12px 15px; border: 2px solid #e1e8ed;
+      border-radius: 8px; font-size: 16px; background: #f8f9fa;
+    }
+    input:focus, select:focus {
+      outline: none; border-color: #32d692; background: white;
+      box-shadow: 0 0 0 3px rgba(50, 214, 146, 0.1);
+    }
+    .btn {
+      width: 100%; background: linear-gradient(135deg, #32d692 0%, #1dd1a1 100%);
+      color: white; border: none; padding: 15px; border-radius: 8px;
+      font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(50, 214, 146, 0.3);
+    }
+    .result {
+      margin-top: 30px; text-align: center; padding: 20px;
+      background: #f8f9fa; border-radius: 10px; display: none;
+    }
+    .qr-code { margin: 20px 0; }
+    .pix-code {
+      background: white; padding: 15px; border-radius: 8px;
+      border: 1px solid #e1e8ed; font-family: monospace;
+      font-size: 12px; word-break: break-word; margin: 15px 0;
+    }
+    .copy-btn {
+      background: #6c757d; font-size: 14px; padding: 8px 20px; margin-top: 10px;
+    }
+    .footer {
+      text-align: center; padding: 20px; color: #666;
+      font-size: 12px; border-top: 1px solid #e1e8ed;
+    }
+    .error {
+      background: #fee; color: #c33; padding: 10px;
+      border-radius: 5px; margin: 10px 0; display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>💳 Gerador PIX</h1>
-            <p>Crie QR Codes PIX de forma simples e rápida</p>
-        </div>
-        <div class="form-container">
-            <form id="pixForm">
-                <div class="form-group">
-                    <label for="nome">Nome do Beneficiário</label>
-                    <input type="text" id="nome" required placeholder="Seu nome completo">
-                </div>
-                <div class="form-group">
-                    <label for="tipoPix">Tipo de Chave PIX</label>
-                    <select id="tipoPix" required>
-                        <option value="">Selecione o tipo</option>
-                        <option value="cpf">CPF</option>
-                        <option value="cnpj">CNPJ</option>
-                        <option value="email">E-mail</option>
-                        <option value="telefone">Telefone</option>
-                        <option value="aleatoria">Chave Aleatória</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="chavePix">Chave PIX</label>
-                    <input type="text" id="chavePix" required placeholder="Digite sua chave PIX">
-                </div>
-                <div class="form-group">
-                    <label for="valor">Valor (R$) - Opcional</label>
-                    <input type="number" id="valor" step="0.01" min="0" placeholder="0.00">
-                </div>
-                <div class="form-group">
-                    <label for="identificacao">Identificação/Descrição - Opcional</label>
-                    <input type="text" id="identificacao" maxlength="25" placeholder="Ex: Pagamento pedido #123">
-                </div>
-                <div class="error" id="error"></div>
-                <button type="submit" class="btn">🔍 Gerar QR Code PIX</button>
-            </form>
-            <div class="result" id="result">
-                <h3>QR Code Gerado com Sucesso!</h3>
-                <div class="qr-code" id="qrcode"></div>
-                <div class="pix-code" id="pixCode"></div>
-                <button class="btn copy-btn" onclick="copiarCodigo()">📋 Copiar Código PIX</button>
-            </div>
-        </div>
-        <div class="footer">
-            Desenvolvido para facilitar pagamentos PIX • Padrão Banco Central
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>💳 Gerador PIX</h1>
+      <p>Crie QR Codes PIX de forma simples e rápida</p>
     </div>
+    <div class="form-container">
+      <form id="pixForm">
+        <div class="form-group">
+          <label for="nome">Nome do Beneficiário</label>
+          <input type="text" id="nome" required placeholder="Seu nome completo">
+        </div>
+        <div class="form-group">
+          <label for="tipoPix">Tipo de Chave PIX</label>
+          <select id="tipoPix" required>
+            <option value="">Selecione o tipo</option>
+            <option value="cpf">CPF</option>
+            <option value="cnpj">CNPJ</option>
+            <option value="email">E-mail</option>
+            <option value="telefone">Telefone</option>
+            <option value="aleatoria">Chave Aleatória</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="chavePix">Chave PIX</label>
+          <input type="text" id="chavePix" required placeholder="Digite sua chave PIX">
+        </div>
+        <div class="form-group">
+          <label for="valor">Valor (R$) - Opcional</label>
+          <input type="number" id="valor" step="0.01" min="0" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label for="identificacao">Identificação/Descrição - Opcional</label>
+          <input type="text" id="identificacao" maxlength="25" placeholder="Ex: Pagamento pedido #123">
+        </div>
+        <div class="error" id="error"></div>
+        <button type="submit" class="btn">🔍 Gerar QR Code PIX</button>
+      </form>
+      <div class="result" id="result">
+        <h3>QR Code Gerado com Sucesso!</h3>
+        <div class="qr-code" id="qrcode"></div>
+        <div class="pix-code" id="pixCode"></div>
+        <button class="btn copy-btn" onclick="copiarCodigo()">📋 Copiar Código PIX</button>
+      </div>
+    </div>
+    <div class="footer">
+      Desenvolvido para facilitar pagamentos PIX • Padrão Banco Central
+    </div>
+  </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <script>
-        function crc16(data) {
-            let crc = 0xFFFF;
-            for (let i = 0; i < data.length; i++) {
-                crc ^= data.charCodeAt(i) << 8;
-                for (let j = 0; j < 8; j++) {
-                    if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
-                    else crc = crc << 1;
-                    crc &= 0xFFFF;
-                }
-            }
-            return crc.toString(16).toUpperCase().padStart(4, '0');
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script>
+    function crc16(data) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < data.length; i++) {
+        crc ^= data.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
+          else crc = crc << 1;
+          crc &= 0xFFFF;
         }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
 
-        function formatarChave(tipo, chave) {
-            switch(tipo) {
-                case 'cpf':
-                case 'cnpj':
-                    return chave.replace(/\D/g, '');
-                case 'telefone':
-                    return '+55' + chave.replace(/\D/g, '');
-                default:
-                    return chave;
-            }
-        }
+    function formatarChave(tipo, chave) {
+      switch(tipo) {
+        case 'cpf':
+        case 'cnpj':
+          return chave.replace(/\D/g, '');
+        case 'telefone':
+          return '+55' + chave.replace(/\D/g, '');
+        default:
+          return chave;
+      }
+    }
 
-        function gerarPixCode(nome, chave, valor, identificacao) {
-            let payload = '000201' + (valor ? '010212' : '010211');
-            const gui = 'BR.GOV.BCB.PIX';
-            const chaveFormatada = '01' + chave.length.toString().padStart(2, '0') + chave;
-            const merchantInfo = '0014' + gui + chaveFormatada;
-            payload += '26' + merchantInfo.length.toString().padStart(2, '0') + merchantInfo;
-            payload += '52040000' + '5303986';
-            if (valor && valor > 0) {
-                const valorStr = valor.toFixed(2);
-                payload += '54' + valorStr.length.toString().padStart(2, '0') + valorStr;
-            }
-            payload += '5802BR';
-            payload += '59' + nome.length.toString().padStart(2, '0') + nome;
-            if (identificacao) {
-                const ad = '05' + identificacao.length.toString().padStart(2, '0') + identificacao;
-                payload += '62' + ad.length.toString().padStart(2, '0') + ad;
-            }
-            payload += '6304' + crc16(payload);
-            return payload;
-        }
+    function gerarPixCode(nome, chave, valor, identificacao) {
+      let payload = '000201' + (valor ? '010212' : '010211');
 
-        document.getElementById('pixForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nome = document.getElementById('nome').value.trim();
-            const tipoPix = document.getElementById('tipoPix').value;
-            const chavePix = document.getElementById('chavePix').value.trim();
-            const valor = parseFloat(document.getElementById('valor').value) || 0;
-            const identificacao = document.getElementById('identificacao').value.trim();
-            const errorDiv = document.getElementById('error');
-            errorDiv.style.display = 'none';
+      const gui = 'br.gov.bcb.pix';
+      const guiTag = '00' + '14' + gui;
+      const chaveTag = '01' + chave.length.toString().padStart(2, '0') + chave;
+      const merchantInfo = guiTag + chaveTag;
+      const merchantField = '26' + merchantInfo.length.toString().padStart(2, '0') + merchantInfo;
 
-            if (!nome || !tipoPix || !chavePix) {
-                errorDiv.textContent = 'Por favor, preencha todos os campos obrigatórios.';
-                errorDiv.style.display = 'block';
-                return;
-            }
+      payload += merchantField;
+      payload += '52040000';
+      payload += '5303986';
+      if (valor && valor > 0) {
+        const valorStr = valor.toFixed(2);
+        payload += '54' + valorStr.length.toString().padStart(2, '0') + valorStr;
+      }
+      payload += '5802BR';
+      payload += '59' + nome.length.toString().padStart(2, '0') + nome;
 
-            const chaveFormatada = formatarChave(tipoPix, chavePix);
-            const pixCode = gerarPixCode(nome, chaveFormatada, valor, identificacao);
+      if (identificacao) {
+        const ad = '05' + identificacao.length.toString().padStart(2, '0') + identificacao;
+        payload += '62' + ad.length.toString().padStart(2, '0') + ad;
+      }
 
-            document.getElementById('pixCode').textContent = pixCode;
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('qrcode').innerHTML = '';
-            const qr = new QRious({ element: document.createElement('canvas'), value: pixCode, size: 256 });
-            document.getElementById('qrcode').appendChild(qr.element);
-            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-        });
+      payload += '6304' + crc16(payload);
+      return payload;
+    }
 
-        function copiarCodigo() {
-            const codigo = document.getElementById('pixCode').textContent;
-            navigator.clipboard.writeText(codigo).then(function() {
-                const btn = event.target;
-                const textoOriginal = btn.textContent;
-                btn.textContent = '✅ Copiado!';
-                btn.style.background = '#28a745';
-                setTimeout(() => {
-                    btn.textContent = textoOriginal;
-                    btn.style.background = '#6c757d';
-                }, 2000);
-            });
-        }
+    document.getElementById('pixForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const tipoPix = document.getElementById('tipoPix').value;
+      const chavePix = document.getElementById('chavePix').value.trim();
+      const valor = parseFloat(document.getElementById('valor').value) || 0;
+      const identificacao = document.getElementById('identificacao').value.trim();
+      const errorDiv = document.getElementById('error');
+      errorDiv.style.display = 'none';
 
-        document.getElementById('tipoPix').addEventListener('change', function() {
-            const tipo = this.value;
-            const campo = document.getElementById('chavePix');
-            switch(tipo) {
-                case 'cpf':
-                    campo.placeholder = 'Digite o CPF (apenas números)';
-                    campo.maxLength = 14;
-                    break;
-                case 'cnpj':
-                    campo.placeholder = 'Digite o CNPJ (apenas números)';
-                    campo.maxLength = 18;
-                    break;
-                case 'email':
-                    campo.placeholder = 'Digite o e-mail';
-                    campo.maxLength = 77;
-                    break;
-                case 'telefone':
-                    campo.placeholder = 'Digite o telefone (DDD + número)';
-                    campo.maxLength = 14;
-                    break;
-                case 'aleatoria':
-                    campo.placeholder = 'Cole a chave aleatória';
-                    campo.maxLength = 77;
-                    break;
-                default:
-                    campo.placeholder = 'Digite sua chave PIX';
-                    campo.maxLength = 77;
-            }
-        });
-    </script>
+      if (!nome || !tipoPix || !chavePix) {
+        errorDiv.textContent = 'Por favor, preencha todos os campos obrigatórios.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      const chaveFormatada = formatarChave(tipoPix, chavePix);
+      const pixCode = gerarPixCode(nome, chaveFormatada, valor, identificacao);
+
+      document.getElementById('pixCode').textContent = pixCode;
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('qrcode').innerHTML = '';
+      const qr = new QRious({ element: document.createElement('canvas'), value: pixCode, size: 256 });
+      document.getElementById('qrcode').appendChild(qr.element);
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    function copiarCodigo() {
+      const codigo = document.getElementById('pixCode').textContent;
+      navigator.clipboard.writeText(codigo).then(function() {
+        const btn = event.target;
+        const textoOriginal = btn.textContent;
+        btn.textContent = '✅ Copiado!';
+        btn.style.background = '#28a745';
+        setTimeout(() => {
+          btn.textContent = textoOriginal;
+          btn.style.background = '#6c757d';
+        }, 2000);
+      });
+    }
+
+    document.getElementById('tipoPix').addEventListener('change', function() {
+      const tipo = this.value;
+      const campo = document.getElementById('chavePix');
+      switch(tipo) {
+        case 'cpf':
+          campo.placeholder = 'Digite o CPF (apenas números)';
+          campo.maxLength = 14;
+          break;
+        case 'cnpj':
+          campo.placeholder = 'Digite o CNPJ (apenas números)';
+          campo.maxLength = 18;
+          break;
+        case 'email':
+          campo.placeholder = 'Digite o e-mail';
+          campo.maxLength = 77;
+          break;
+        case 'telefone':
+          campo.placeholder = 'Digite o telefone (DDD + número)';
+          campo.maxLength = 14;
+          break;
+        case 'aleatoria':
+          campo.placeholder = 'Cole a chave aleatória';
+          campo.maxLength = 77;
+          break;
+        default:
+          campo.placeholder = 'Digite sua chave PIX';
+          campo.maxLength = 77;
+      }
+    });
+  </script>
 </body>
 </html>
