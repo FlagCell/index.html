@@ -2,10 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Pix Compatível - Curto e Leve</title>
+  <title>Pix Compatível - Sem cidade</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
+    body { font-family: Arial; max-width: 600px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
     label { display: block; margin-top: 10px; font-weight: bold; }
     input, select { width: 100%; padding: 10px; margin-top: 5px; }
     button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; }
@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<h2>Gerador Pix (Compacto - 100% compatível)</h2>
+<h2>Gerador Pix (Leve - sem cidade)</h2>
 
 <label>Tipo da chave Pix:</label>
 <select id="tipo">
@@ -63,14 +63,12 @@ function gerar() {
   let chave = document.getElementById("chave").value.trim();
   const txid = document.getElementById("txid").value.trim();
   const nome = "N";
-  const cidade = "C";
 
   if (!tipo || !chave) {
     alert("Preencha tipo e chave Pix.");
     return;
   }
 
-  // Ajustar chave para telefone com +55
   if (tipo === "telefone") {
     chave = chave.replace(/\D/g, "");
     if (!chave.startsWith("55")) chave = "55" + chave;
@@ -84,13 +82,13 @@ function gerar() {
   const merchantField = "26" + merchantAccount.length.toString().padStart(2, '0') + merchantAccount;
 
   let payload = "000201";
-  // ⚠️ Campo 01 (estático/dinâmico) omitido de propósito
+  // Campo 01 removido
   payload += merchantField;
   payload += "52040000";
   payload += "5303986";
   payload += "5802BR";
   payload += "5901" + nome;
-  payload += "6001" + cidade;
+  // Campo 60 (cidade) removido
 
   if (txid) {
     const ad = "05" + txid.length.toString().padStart(2, '0') + txid;
