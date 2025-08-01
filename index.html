@@ -2,28 +2,29 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>QR Code Pix - EMV válido</title>
+  <title>Gerador QR Code Pix</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
-    label { display: block; margin-top: 10px; }
-    input, select { width: 100%; padding: 8px; margin-top: 5px; }
-    button { width: 100%; padding: 12px; margin-top: 20px; font-weight: bold; }
+    body { font-family: Arial; max-width: 600px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, select { width: 100%; padding: 10px; margin-top: 5px; }
+    button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; }
     #qrcode { margin-top: 20px; text-align: center; }
-    .pix-code { background: #fff; border: 1px solid #ccc; padding: 10px; margin-top: 15px; font-family: monospace; word-break: break-word; }
+    .pix-code { background: #fff; border: 1px solid #ccc; padding: 10px; font-family: monospace; word-break: break-word; margin-top: 15px; }
+    .btn-group button { width: 49%; display: inline-block; }
   </style>
 </head>
 <body>
 
-<h2>Gerador QR Code Pix (Padrão Banco Central)</h2>
+<h2>Gerador QR Code Pix (padrão BC)</h2>
 
-<label>Nome do recebedor (até 25 caracteres):</label>
+<label>Nome do recebedor:</label>
 <input id="nome" maxlength="25" placeholder="Ex: JOAO SILVA" />
 
-<label>Cidade (até 15 caracteres):</label>
+<label>Cidade do recebedor:</label>
 <input id="cidade" maxlength="15" placeholder="Ex: RIO DE JANEIRO" />
 
-<label>Tipo de chave Pix:</label>
+<label>Tipo da chave Pix:</label>
 <select id="tipo">
   <option value="">Selecione</option>
   <option value="cpf">CPF</option>
@@ -34,27 +35,32 @@
 </select>
 
 <label>Chave Pix:</label>
-<input id="chave" maxlength="77" placeholder="Ex: 5521999999999 ou email" />
+<input id="chave" maxlength="77" placeholder="Digite sua chave Pix" />
 
 <label>Valor (opcional):</label>
 <input id="valor" type="number" step="0.01" placeholder="Ex: 25.00" />
 
-<label>Identificador da transação (Txid - opcional):</label>
+<label>Identificador (Txid) - opcional:</label>
 <input id="txid" maxlength="25" placeholder="Ex: PEDIDO123" />
 
-<button onclick="gerar()">🔍 Gerar QR Code Pix</button>
+<button onclick="gerar()">Gerar QR Code Pix</button>
 
 <div id="qrcode"></div>
 <div class="pix-code" id="emv"></div>
+<div class="btn-group">
+  <button onclick="copiar()">📋 Copiar código Pix</button>
+  <button onclick="baixar()">⬇️ Baixar QR Code</button>
+</div>
 
 <script>
+let imgBase64 = "";
+
 function crc16(str) {
   let crc = 0xFFFF;
   for (let i = 0; i < str.length; i++) {
     crc ^= str.charCodeAt(i) << 8;
     for (let j = 0; j < 8; j++) {
-      if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
-      else crc <<= 1;
+      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
       crc &= 0xFFFF;
     }
   }
@@ -70,7 +76,7 @@ function gerar() {
   const txid = document.getElementById("txid").value.trim();
 
   if (!nome || !cidade || !tipo || !chave) {
-    alert("Preencha todos os campos obrigatórios.");
+    alert("Preencha os campos obrigatórios.");
     return;
   }
 
@@ -82,45 +88,44 @@ function gerar() {
     chaveFormatada = chave.replace(/\D/g, "");
   }
 
-  // Corrigido: campo 26 com subcampos TLV corretos
   const gui = "br.gov.bcb.pix";
-  const merchantInfo =
+  const merchantAccount =
     "00" + "14" + gui +
     "01" + chaveFormatada.length.toString().padStart(2, '0') + chaveFormatada;
   const merchantField =
-    "26" + merchantInfo.length.toString().padStart(2, '0') + merchantInfo;
+    "26" + merchantAccount.length.toString().padStart(2, '0') + merchantAccount;
 
   let payload = "000201";
-  payload += "010211"; // QR Estático
+  payload += "010211";
   payload += merchantField;
   payload += "52040000";
   payload += "5303986";
   if (valor) {
-    const val = parseFloat(valor).toFixed(2);
-    payload += "54" + val.length.toString().padStart(2, "0") + val;
+    const valStr = parseFloat(valor).toFixed(2);
+    payload += "54" + valStr.length.toString().padStart(2, "0") + valStr;
   }
   payload += "5802BR";
   payload += "59" + nome.length.toString().padStart(2, "0") + nome;
   payload += "60" + cidade.length.toString().padStart(2, "0") + cidade;
 
   if (txid) {
-    const tx = "05" + txid.length.toString().padStart(2, "0") + txid;
-    payload += "62" + tx.length.toString().padStart(2, "0") + tx;
+    const ad = "05" + txid.length.toString().padStart(2, "0") + txid;
+    payload += "62" + ad.length.toString().padStart(2, "0") + ad;
   }
 
   payload += "6304";
   payload += crc16(payload);
 
-  document.getElementById("emv").innerText = payload;
+  document.getElementById("emv").textContent = payload;
 
-  // Geração do QR Code com margem e correção de erro
   QRCode.toDataURL(payload, {
     errorCorrectionLevel: 'M',
     margin: 4,
     scale: 8
   }, function (err, url) {
     if (err) return alert("Erro ao gerar QR Code.");
-    const img = document.createElement('img');
+    imgBase64 = url;
+    const img = new Image();
     img.src = url;
     img.alt = "QR Code Pix";
     img.style.maxWidth = "100%";
@@ -128,6 +133,24 @@ function gerar() {
     qrDiv.innerHTML = "";
     qrDiv.appendChild(img);
   });
+}
+
+function copiar() {
+  const codigo = document.getElementById("emv").textContent;
+  navigator.clipboard.writeText(codigo).then(() => {
+    alert("Código Pix copiado com sucesso!");
+  });
+}
+
+function baixar() {
+  if (!imgBase64) {
+    alert("Gere um QR Code antes de baixar.");
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = imgBase64;
+  a.download = "qrcode_pix.png";
+  a.click();
 }
 </script>
 
